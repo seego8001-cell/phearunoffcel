@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>សាលាកុំព្យូទ័រ - Sala Computer Academy</title>
+  <style>
+    body { font-family: 'Kantumruy Pro', sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; }
+    header { background: #003366; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .container { max-width: 1000px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .btn { background: #ff9900; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .btn:hover { background: #e68a00; }
+    .lesson-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 400px; }
+    input, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>សាលាកុំព្យូទ័រ</h2>
+  <button class="btn" onclick="openAdminModal()">កន្លែងគ្រប់គ្រង (Admin)</button>
+</header>
+
+<div class="container">
+  <h3>🎉 វគ្គសិក្សាកុំព្យូទ័រឥតគិតថ្លៃ</h3>
+  <p>សូមចុះឈ្មោះដើម្បីចាប់ផ្ដើមរៀន និងទទួលវិញ្ញាបនបត្រនៅពេលបញ្ចប់ការសិក្សា!</p>
+  
+  <button class="btn" onclick="openRegisterModal()">ចុះឈ្មោះរៀនឥឡូវនេះ</button>
+
+  <hr style="margin: 30px 0;">
+
+  <!-- ផ្នែកមេរៀន -->
+  <h3>📚 មេរៀនសិក្សា</h3>
+  <div class="lesson-card">
+    <h4>មេរៀនទី ១: មូលដ្ឋានគ្រឹះកុំព្យូទ័រ</h4>
+    <p>រៀនអំពីការប្រើប្រាស់ Mouse, Keyboard និងប្រព័ន្ធប្រតិបត្តិការ Windows។</p>
+    <button class="btn" onclick="goToQuiz(1)">ធ្វើតេស្តមេរៀនទី ១</button>
+  </div>
+
+  <div class="lesson-card">
+    <h4>មេរៀនទី ២: ការប្រើប្រាស់ Microsoft Word</h4>
+    <p>រៀនរៀបចំឯកសារ វាយអត្ថបទ និងការកំណត់ Format ផ្សេងៗ។</p>
+    <button class="btn" onclick="goToQuiz(2)">ធ្វើតេស្តមេរៀនទី ២</button>
+  </div>
+</div>
+
+<!-- Modal ចុះឈ្មោះ -->
+<div id="registerModal" class="modal">
+  <div class="modal-content">
+    <h3>ទម្រង់ចុះឈ្មោះរៀន</h3>
+    <input type="text" id="studentName" placeholder="ឈ្មោះពេញ" required>
+    <input type="tel" id="studentPhone" placeholder="លេខទូរស័ព្ទ" required>
+    <select id="studentCourse">
+      <option value="Computer Basic">កុំព្យូទ័រមូលដ្ឋាន</option>
+      <option value="Microsoft Office">Microsoft Office</option>
+    </select>
+    <button class="btn" style="width:100%;" onclick="submitRegistration()">បញ្ជូនការចុះឈ្មោះ</button>
+    <button class="btn" style="width:100%; background:#888; margin-top:5px;" onclick="closeRegisterModal()">បិទ</button>
+  </div>
+</div>
+
+<!-- Modal គ្រប់គ្រង (Admin Login) -->
+<div id="adminModal" class="modal">
+  <div class="modal-content">
+    <h3>ចូលប្រព័ន្ធគ្រប់គ្រង</h3>
+    <input type="password" id="adminCode" placeholder="បញ្ចូលលេខកូដសម្ងាត់">
+    <button class="btn" style="width:100%;" onclick="checkAdminCode()">ចូលប្រព័ន្ធ</button>
+    <button class="btn" style="width:100%; background:#888; margin-top:5px;" onclick="closeAdminModal()">បិទ</button>
+  </div>
+</div>
+
+<script>
+  // តំណភ្ជាប់ Google Apps Script Web App របស់អ្នក
+  const GOOGLE_SCRIPT_URL = "ដាក់_WEB_APP_URL_របស់អ្នកនៅទីនេះ";
+  const ADMIN_PASSCODE = "1234"; // លេខកូដសុវត្ថិភាពសម្រាប់ Admin
+
+  function openRegisterModal() { document.getElementById('registerModal').style.display = 'flex'; }
+  function closeRegisterModal() { document.getElementById('registerModal').style.display = 'none'; }
+  
+  function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
+  function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+
+  // មុខងារបញ្ជូនទិន្នន័យចុះឈ្មោះ
+  function submitRegistration() {
+    const name = document.getElementById('studentName').value;
+    const phone = document.getElementById('studentPhone').value;
+    const course = document.getElementById('studentCourse').value;
+
+    if (!name || !phone) {
+      alert('សូមបញ្ចូលឈ្មោះ និងលេខទូរស័ព្ទ!');
+      return;
+    }
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, course })
+    }).then(() => {
+      alert('ការចុះឈ្មោះជោគជ័យ! ប្រព័ន្ធបានផ្ញើព័ត៌មានទៅកាន់សាលារួចរាល់។');
+      closeRegisterModal();
+    }).catch(err => {
+      alert('មានបញ្ហាក្នុងការផ្ញើទិន្នន័យ!');
+      console.error(err);
+    });
+  }
+
+  // មុខងារផ្ទៀងផ្ទាត់លេខកូដ Admin
+  function checkAdminCode() {
+    const inputCode = document.getElementById('adminCode').value;
+    if (inputCode === ADMIN_PASSCODE) {
+      alert('ចូលប្រព័ន្ធគ្រប់គ្រងជោគជ័យ!');
+      closeAdminModal();
+      // ទីនេះអាច Redirect ទៅកាន់ទំព័រ Admin ឬបើកមើល Google Sheet របស់អ្នក
+      window.open('https://docs.google.com/spreadsheets', '_blank');
+    } else {
+      alert('លេខកូដមិនត្រឹមត្រូវទេ!');
+    }
+  }
+
+  // មុខងារនាំសិស្សទៅកាន់កន្លែងធ្វើតេស្ត
+  function goToQuiz(lessonId) {
+    alert('ប្រព័ន្ធកំពុងនាំអ្នកទៅកាន់កន្លែងធ្វើតេស្តមេរៀនទី ' + lessonId);
+    // អ្នកអាចដាក់ Link ទៅ Google Form ឬទំព័រ Quiz របស់អ្នកនៅទីនេះ
+    // window.location.href = "https://your-quiz-link.com?lesson=" + lessonId;
+  }
+</script>
+
+</body>
+</html>
